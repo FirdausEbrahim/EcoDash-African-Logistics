@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    background-color: #1f2937;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin: 10px 0 5px;
+    color: #facc15;
+}
+
+h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+}
+
+.HUD{
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    background-color: #111827;
+    padding: 10px;
+}
+
+.HUD p {
+    margin: 0;
+}
+
+canvas {
+    display: block;
+}
