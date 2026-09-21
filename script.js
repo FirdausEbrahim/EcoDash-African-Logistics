@@ -14,17 +14,24 @@ let acceleration = 0.3;
 let friction = 0.95;
 let maxSpeed = 6;
 
+let playerAngle = 0;
+let turnSpeed = Math.PI / 36;
+
 let keys = {};
 
 function drawBackground() {
-    ctx.fillStyle = "#d6b87c";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+   ctx.fillStyle = "#d6b87c";
+   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 }
 
 function drawPlayer() {
-    ctx.fillStyle = "green";
-    ctx.fillRect(playerX, playerY, 60, 35);
+    ctx.save();
+    ctx.translate(playerX + 30, playerY + 17.5);
+    ctx.rotate(playerAngle);
+    ctx.fillStyle = "green"; 
+    ctx.fillRect(-30, -17.5, 60, 35);
+    ctx.restore();
 }
 
 document.addEventListener("keydown", function(event) {
@@ -38,20 +45,22 @@ document.addEventListener("keyup", function(event) {
 function movePlayer() {
 
 
- if (keys["ArrowRight"]) {
-        velocityX += acceleration;
+ if (keys["ArrowLeft"]) {
+        playerAngle -= turnSpeed;
     }
 
-    if (keys["ArrowLeft"]) {
-        velocityX -= acceleration;
+    if (keys["ArrowRight"]) {
+        playerAngle += turnSpeed;
     }
 
     if (keys["ArrowUp"]) {
-      velocityY -= acceleration;
+      velocityX += Math.cos(playerAngle) * acceleration;
+      velocityY += Math.sin(playerAngle) * acceleration;
     }
 
    if (keys["ArrowDown"]) {
-      velocityY += acceleration;
+      velocityX -= Math.cos(playerAngle) * acceleration;
+      velocityY -= Math.sin(playerAngle) * acceleration;
    }
 
 
@@ -87,8 +96,9 @@ function animate() {
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 drawBackground();
-drawPlayer();
 movePlayer();
+drawPlayer();
+
 
 requestAnimationFrame(animate);
 
