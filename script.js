@@ -17,6 +17,9 @@ let maxSpeed = 6;
 let playerAngle = 0;
 let turnSpeed = Math.PI / 36;
 
+let batteryLevel = 100;
+let batteryDrain = 0.02;
+
 let keys = {};
 
 function drawBackground() {
@@ -47,18 +50,18 @@ function movePlayer() {
 
  if (keys["ArrowLeft"]) {
         playerAngle -= turnSpeed;
-    }
+    }  
 
     if (keys["ArrowRight"]) {
         playerAngle += turnSpeed;
     }
 
-    if (keys["ArrowUp"]) {
+    if (keys["ArrowUp"] && batteryLevel > 0) {
       velocityX += Math.cos(playerAngle) * acceleration;
       velocityY += Math.sin(playerAngle) * acceleration;
     }
 
-   if (keys["ArrowDown"]) {
+   if (keys["ArrowDown"] && batteryLevel > 0) {
       velocityX -= Math.cos(playerAngle) * acceleration;
       velocityY -= Math.sin(playerAngle) * acceleration;
    }
@@ -84,12 +87,26 @@ if (velocityY > maxSpeed) {
 
 if (velocityY < -maxSpeed) {
     velocityY = -maxSpeed;
-    
+
 }
+
 
 playerX += velocityX;
 playerY += velocityY;
 
+}
+
+function updateBattery() {
+
+        if ((keys["ArrowUp"] || keys["ArrowDown"]) && batteryLevel > 0) {
+            batteryLevel -= batteryDrain;
+    }
+
+    if (batteryLevel < 0) {
+        batteryLevel = 0;
+    }
+
+    document.getElementById("battery").textContent = Math.round(batteryLevel);
 }
 
 function animate() {
@@ -97,7 +114,9 @@ ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 drawBackground();
 movePlayer();
+updateBattery();
 drawPlayer();
+
 
 
 requestAnimationFrame(animate);
