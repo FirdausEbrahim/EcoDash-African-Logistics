@@ -20,11 +20,44 @@ let turnSpeed = Math.PI / 36;
 let batteryLevel = 100;
 let batteryDrain = 0.02;
 
+let solarX = canvas.width - 180;
+let solarY = canvas.height - 120;
+
+let solarWidth = 130;
+let solarHeight = 70;
+
+let rechargeRate = 0.08;
+
 let keys = {};
 
 function drawBackground() {
-   ctx.fillStyle = "#d6b87c";
+   ctx.fillStyle = "#D8A47F";
    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+   function drawSolarZone() {
+    ctx.fillStyle = "#F4D35E";
+    ctx.fillRect(solarX, solarY, solarWidth, solarHeight);
+    ctx.fillStyle = "black";
+    ctx.fillText("Solar Charging point", solarX + 20, solarY + 40);
+   }
+
+function checkChargingZone() {
+
+    if (
+        playerX < solarX + solarWidth &&
+        playerX + 60 > solarX &&
+        playerY < solarY + solarHeight &&
+        playerY + 35 > solarY
+    ){
+        batteryLevel += rechargeRate;
+    }
+
+    if (batteryLevel > 100) {
+        batteryLevel = 100;
+    }
+
+        document.getElementById("battery").textContent = Math.round(batteryLevel);
 
 }
 
@@ -32,7 +65,7 @@ function drawPlayer() {
     ctx.save();
     ctx.translate(playerX + 30, playerY + 17.5);
     ctx.rotate(playerAngle);
-    ctx.fillStyle = "green"; 
+    ctx.fillStyle = "#7F5539"; 
     ctx.fillRect(-30, -17.5, 60, 35);
     ctx.restore();
 }
@@ -113,8 +146,10 @@ function animate() {
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 drawBackground();
+drawSolarZone();
 movePlayer();
 updateBattery();
+checkChargingZone();
 drawPlayer();
 
 
