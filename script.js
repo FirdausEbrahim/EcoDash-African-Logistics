@@ -28,6 +28,12 @@ let solarHeight = 70;
 
 let rechargeRate = 0.08;
 
+let potholeX = 450;
+let potholeY = 250;
+
+let potholeWidth = 70;
+let potholeheight = 45;
+
 let keys = {};
 
 function drawBackground() {
@@ -35,12 +41,32 @@ function drawBackground() {
    ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-   function drawSolarZone() {
+function drawSolarZone() {
     ctx.fillStyle = "#F4D35E";
     ctx.fillRect(solarX, solarY, solarWidth, solarHeight);
     ctx.fillStyle = "black";
     ctx.fillText("Solar Charging point", solarX + 20, solarY + 40);
    }
+
+function drawPothole() {
+    ctx.fillStyle = "#4A2C20";
+
+    ctx.fillRect(
+        potholeX, potholeY, potholeWidth, potholeheight);
+}
+
+function checkPotholeCollision(){
+
+    if (
+        playerX < potholeX + potholeWidth &&
+        playerX + 60 > potholeX &&
+        playerY < potholeY + potholeheight &&
+        playerY + 35 > potholeY
+    ){
+        velocityX *= 0.4;
+        velocityY *= 0.4;
+    }
+}
 
 function checkChargingZone() {
 
@@ -147,9 +173,11 @@ ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 drawBackground();
 drawSolarZone();
+drawPothole();
 movePlayer();
 updateBattery();
 checkChargingZone();
+checkPotholeCollision();
 drawPlayer();
 
 
