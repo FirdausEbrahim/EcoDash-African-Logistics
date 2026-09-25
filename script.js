@@ -34,6 +34,13 @@ let potholeY = 250;
 let potholeWidth = 70;
 let potholeheight = 45;
 
+let wildLifeX = 800;
+let wildLifeY = 180;
+let wildLifeRadius = 35;
+
+let distanceTravelled = 0;
+let score = 0;
+
 let keys = {};
 
 function drawBackground() {
@@ -53,6 +60,33 @@ function drawPothole() {
 
     ctx.fillRect(
         potholeX, potholeY, potholeWidth, potholeheight);
+}
+
+function drawWildLife() {
+    ctx.beginPath();
+    ctx.arc(wildLifeX, wildLifeY, wildLifeRadius, 0, Math.PI * 2);
+    ctx.fillStyle = "#A2674A";
+    ctx.fill();
+    ctx.fillStyle = "black";
+    ctx.fillText("WildLife", wildLifeX - 20, wildLifeY + 5);
+}
+
+function checkWildLifeCollision() {
+    let playerCenterX = playerX + 30;
+    let playerCenterY = playerY + 17.5;
+
+    let distanceX = playerCenterX - wildLifeX;
+    let distanceY = playerCenterY - wildLifeY;
+
+    let distance = Math.sqrt(
+        distanceX * distanceX + 
+        distanceY * distanceY
+    );
+
+    if (distance < wildLifeRadius + 30) {
+        velocityX *= 0.2;
+        velocityY *= 0.2;
+    }
 }
 
 function checkPotholeCollision(){
@@ -168,16 +202,33 @@ function updateBattery() {
     document.getElementById("battery").textContent = Math.round(batteryLevel);
 }
 
+function updateScoreAndDistance() {
+    let speed = Math.sqrt(
+        velocityX * velocityX +
+        velocityY * velocityY 
+    );
+
+    distanceTravelled += speed * 0.05;
+    score = Math.floor(distanceTravelled * 10);
+    document.getElementById("distance").textContent = 
+        Math.floor(distanceTravelled);
+
+    document.getElementById("score").textContent = score;
+}
+
 function animate() {
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 drawBackground();
 drawSolarZone();
 drawPothole();
+drawWildLife();
 movePlayer();
 updateBattery();
+updateScoreAndDistance();
 checkChargingZone();
 checkPotholeCollision();
+checkWildLifeCollision();
 drawPlayer();
 
 
