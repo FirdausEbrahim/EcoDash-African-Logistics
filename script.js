@@ -39,7 +39,9 @@ let wildLifeY = 180;
 let wildLifeRadius = 35;
 
 let distanceTravelled = 0;
+
 let score = 0;
+let gameState = "start";
 
 let keys = {};
 
@@ -52,6 +54,8 @@ function drawSolarZone() {
     ctx.fillStyle = "#F4D35E";
     ctx.fillRect(solarX, solarY, solarWidth, solarHeight);
     ctx.fillStyle = "black";
+    ctx.font = "12px Arial";
+    ctx.textAlign = "left";
     ctx.fillText("Solar Charging point", solarX + 20, solarY + 40);
    }
 
@@ -68,6 +72,8 @@ function drawWildLife() {
     ctx.fillStyle = "#A2674A";
     ctx.fill();
     ctx.fillStyle = "black";
+    ctx.font = "12px Arial";
+    ctx.textAlign = "left";
     ctx.fillText("WildLife", wildLifeX - 20, wildLifeY + 5);
 }
 
@@ -132,6 +138,23 @@ function drawPlayer() {
 
 document.addEventListener("keydown", function(event) {
     keys[event.key] = true;
+
+    if (event.key == "Enter" && gameState == "start")  {
+        gameState = "playing";
+    }
+
+    if (event.key == "p" || event.key == "P"){
+        if (gameState == "playing") {
+            gameState = "paused";
+        }
+        else if (gameState == "paused") {
+            gameState = "playing";
+        }
+    }
+
+    if ((event.key == "r" || event.key == "R") && gameState == "gameOver") {
+        restartGame();
+    }
 });
 
 document.addEventListener("keyup", function(event) {
@@ -239,6 +262,110 @@ function updateScoreAndDistance() {
     document.getElementById("score").textContent = score;
 }
 
+function drawStartScreen() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "EcoDash",
+        canvas.width /2,
+        canvas.height /2 -40
+    );
+
+    ctx.font = "18px Arial";
+
+    ctx.fillText(
+        "Press Enter to Start",
+        canvas.width /2,
+        canvas.height /2 
+    );
+}
+
+function drawPauseScreen() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "Paused",
+        canvas.width /2,
+        canvas.height /2 
+    );
+
+     ctx.font = "18px Arial";
+
+    ctx.fillText(
+        "Press Enter to Start",
+        canvas.width /2,
+        canvas.height /2 + 40
+    );
+}
+
+function drawGameOverScreen() {
+    ctx.save();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "Game Over!",
+        canvas.width /2,
+        canvas.height /2 - 40
+    );
+
+     ctx.font = "18px Arial";
+
+    ctx.fillText(
+        "Final Score: " + score,
+        canvas.width /2,
+        canvas.height /2
+    );
+
+    ctx.fillText(
+        "Press R to Restart",
+        canvas.width /2,
+        canvas.height /2 + 40
+    );
+
+    ctx.restore();
+}
+
+function checkGameOver() {
+    if (batteryLevel <= 0) {
+        gameState = "gameOver";
+
+    }
+}
+
+function restartGame() {
+    playerX = 100;
+    playerY = canvas.height / 2;
+
+    velocityX = 0;
+    velocityY = 0;
+
+    playerAngle = 0;
+    batteryLevel = 100;
+
+    distanceTravelled = 0;
+    score = 0;
+
+    keys = {};
+
+    document.getElementById("battery").textContent = 100;
+    document.getElementById("distance").textContent = 0;
+    document.getElementById("score").textContent = 0;
+
+    gameState = "playing";
+}
+
 function animate() {
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -246,15 +373,36 @@ drawBackground();
 drawSolarZone();
 drawPothole();
 drawWildLife();
-movePlayer();
-updateBattery();
-updateScoreAndDistance();
-checkChargingZone();
-checkPotholeCollision();
-checkWildLifeCollision();
+
+if (gameState == "playing") {
+
+
+    movePlayer();
+    updateBattery();
+    updateScoreAndDistance();
+    checkChargingZone();
+    checkPotholeCollision();
+    checkWildLifeCollision();
+    checkGameOver();
+
+}
+
 drawPlayer();
 
+if (gameState == "start") {
+    drawStartScreen();
 
+}
+
+if (gameState == "paused") {
+    drawPauseScreen();
+
+}
+
+if (gameState == "gameOver") {
+    drawGameOverScreen();
+
+}
 
 requestAnimationFrame(animate);
 
