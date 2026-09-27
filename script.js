@@ -4,17 +4,112 @@ let ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 140;
 
-let playerX = 100;
-let playerY = canvas.height / 2;
+class Player {
 
-let velocityX = 0;
-let velocityY = 0;
+    constructor(x,y) {
+        this.x = x;
+        this.y = y;
+
+        this.width = 60;
+        this.height = 35;
+
+        this.velocityX = 0;
+        this.velocityY = 0;
+        
+        this.angle = 0;
+    }
+
+    draw() {
+        ctx.save();
+
+        ctx.translate(
+            this.x + this.width /2,
+            this.y + this.height /2
+        );
+
+        ctx.rotate(this.angle);
+        ctx.fillStyle = "#7F5539"
+        
+        ctx.fillRect(
+            -this.width /2,
+            -this.height /2,
+            this.width,
+            this.height
+        );
+
+        ctx.restore();
+    }
+
+    move(){
+
+        if(keys["ArrowLeft"]) {
+            this.angle -= turnSpeed;
+        }
+
+        if (keys["ArrowRight"]) {
+            this.angle += turnSpeed;
+        }
+
+        if (keys["ArrowDown"] && batteryLevel > 0) {
+            this.velocityX -= Math.cos(this.angle) * acceleration;
+            this.velocityY -= Math.sin(this.angle) * acceleration;
+        }
+
+        if (keys["ArrowUp"] && batteryLevel > 0) {
+             this.velocityX += Math.cos(this.angle) * acceleration;
+             this.velocityY += Math.sin(this.angle) * acceleration;
+        }
+
+        this.velocityX *= friction;
+        this.velocityY *= friction;
+
+        if (this.velocityX > maxSpeed){
+            this.velocityX = maxSpeed;
+        }
+
+        if (this.velocityX < -maxSpeed){
+            this.velocityX = -maxSpeed;
+        }
+
+        if (this.velocityY > maxSpeed) {
+            this.velocityY = maxSpeed;
+        }
+
+        if (this.velocityY < -maxSpeed) {
+            this.velocityY = -maxSpeed;
+        }
+
+        this.x += this.velocityX;
+        this.y += this.velocityY;
+
+        if (this.x < 0) {
+            this.x = 0;
+            this.velocityX = 0;
+        }
+
+        if (this.x + this.width > canvas.width){
+            this.x = canvas.width - this.width;
+            this.velocityX = 0;
+        }
+
+        if (this.y < 0) {
+            this.y = 0;
+            this.velocityY = 0;
+        }
+
+        if (this.y + this.height > canvas.height) {
+            this.y = canvas.height - this.height;
+            this.velocityY = 0;
+        }
+    }
+}
+
+let player = new Player(100, canvas.height /2);
 
 let acceleration = 0.3; 
 let friction = 0.95;
 let maxSpeed = 6;
 
-let playerAngle = 0;
 let turnSpeed = Math.PI / 36;
 
 let batteryLevel = 100;
@@ -93,8 +188,8 @@ function drawWildLife() {
 }
 
 function checkWildLifeCollision() {
-    let playerCenterX = playerX + 30;
-    let playerCenterY = playerY + 17.5;
+    let playerCenterX = player.x + player.width /2;
+    let playerCenterY = player.y + player.height /2;
 
     let distanceX = playerCenterX - wildLifeX;
     let distanceY = playerCenterY - wildLifeY;
@@ -105,31 +200,31 @@ function checkWildLifeCollision() {
     );
 
     if (distance < wildLifeRadius + 30) {
-        velocityX *= 0.2;
-        velocityY *= 0.2;
+       player.velocityX *= 0.2;
+       player.velocityY *= 0.2;
     }
 }
 
 function checkPotholeCollision(){
 
     if (
-        playerX < potholeX + potholeWidth &&
-        playerX + 60 > potholeX &&
-        playerY < potholeY + potholeHeight &&
-        playerY + 35 > potholeY
+        player.x < potholeX + potholeWidth &&
+        player.x + player.width > potholeX &&
+        player.y < potholeY + potholeHeight &&
+        player.y + player.height > potholeY
     ){
-        velocityX *= 0.4;
-        velocityY *= 0.4;
+        player.velocityX *= 0.4;
+        player.velocityY *= 0.4;
     }
 }
 
 function checkChargingZone() {
 
     if (
-        playerX < solarX + solarWidth &&
-        playerX + 60 > solarX &&
-        playerY < solarY + solarHeight &&
-        playerY + 35 > solarY
+        player.x < solarX + solarWidth &&
+        player.x + player.width > solarX &&
+        player.y < solarY + solarHeight &&
+        player.y + player.height > solarY
     ){
         batteryLevel += rechargeRate;
     }
@@ -138,117 +233,11 @@ function checkChargingZone() {
         batteryLevel = 100;
     }
 
-        document.getElementById("battery").textContent = Math.round(batteryLevel);
+        document.getElementById("battery").textContent =
+        Math.round(batteryLevel);
 
 }
 
-function drawPlayer() {
-    ctx.save();
-    ctx.translate(playerX + 30, playerY + 17.5);
-    ctx.rotate(playerAngle);
-    ctx.fillStyle = "#7F5539"; 
-    ctx.fillRect(-30, -17.5, 60, 35);
-    ctx.restore();
-}
-
-document.addEventListener("keydown", function(event) {
-    keys[event.key] = true;
-
-    if (event.key == "Enter" && gameState == "start")  {
-        gameState = "playing";
-    }
-
-    if (event.key == "p" || event.key == "P"){
-        if (gameState == "playing") {
-            gameState = "paused";
-        }
-        else if (gameState == "paused") {
-            gameState = "playing";
-        }
-    }
-
-    if ((event.key == "r" || event.key == "R") && gameState == "gameOver") {
-        restartGame();
-    }
-});
-
-document.addEventListener("keyup", function(event) {
-    keys[event.key] = false;
-});
-
-function movePlayer() {
-
-
- if (keys["ArrowLeft"]) {
-        playerAngle -= turnSpeed;
-    }  
-
-    if (keys["ArrowRight"]) {
-        playerAngle += turnSpeed;
-    }
-
-    if (keys["ArrowUp"] && batteryLevel > 0) {
-      velocityX += Math.cos(playerAngle) * acceleration;
-      velocityY += Math.sin(playerAngle) * acceleration;
-    }
-
-   if (keys["ArrowDown"] && batteryLevel > 0) {
-      velocityX -= Math.cos(playerAngle) * acceleration;
-      velocityY -= Math.sin(playerAngle) * acceleration;
-   }
-
-
-velocityX *= friction;
-velocityY *= friction;
-
-
-if (velocityX > maxSpeed) {
-    velocityX = maxSpeed;
-
-}
-
-if (velocityX < -maxSpeed) {
-    velocityX = -maxSpeed;
-    
-}
-
-if (velocityY > maxSpeed) {
-    velocityY = maxSpeed;
-    
-}
-
-if (velocityY < -maxSpeed) {
-    velocityY = -maxSpeed;
-
-}
-
-
-playerX += velocityX;
-playerY += velocityY;
-
-if (playerX < 0) {
-    playerX = 0;
-    velocityX = 0;
-
-}
-
-if (playerX + 60 > canvas.width) {
-    playerX = canvas.width - 60;
-    velocityX = 0;
-
-}
-
-if (playerY < 0) {
-    playerY = 0;
-    velocityY = 0;
-}
-
-if (playerY + 35 > canvas.height) {
-    playerY = canvas.height - 35;
-    velocityY = 0;
-
-}
-}
 
 function updateBattery() {
 
@@ -266,8 +255,8 @@ function updateBattery() {
 
 function updateScoreAndDistance() {
     let speed = Math.sqrt(
-        velocityX * velocityX +
-        velocityY * velocityY 
+        player.velocityX * player.velocityX +
+        player.velocityY * player.velocityY 
     );
 
     distanceTravelled += speed * 0.05;
@@ -389,13 +378,13 @@ function checkGameOver() {
     }
 
 function restartGame() {
-    playerX = 100;
-    playerY = canvas.height / 2;
+    player.x = 100;
+    player.y = canvas.height /2;
 
-    velocityX = 0;
-    velocityY = 0;
+    player.velocityX = 0;
+    player.velocityY = 0;
 
-    playerAngle = 0;
+    player.angle = 0;
     batteryLevel = 100;
 
     distanceTravelled = 0;
@@ -425,7 +414,7 @@ drawWildLife();
 if (gameState == "playing") {
 
 
-    movePlayer();
+    player.move();
     updateBattery();
     updateScoreAndDistance();
     updateEfficiency();
@@ -436,7 +425,7 @@ if (gameState == "playing") {
 
 }
 
-drawPlayer();
+player.draw();
 
 if (gameState == "start") {
     drawStartScreen();
