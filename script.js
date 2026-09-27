@@ -41,7 +41,19 @@ let wildLifeRadius = 35;
 let distanceTravelled = 0;
 
 let score = 0;
+
+let highScore = localStorage.getItem("ecoDashHighScore");
+
+if (highScore == null) {
+    highScore = 0;
+}
+else {
+    highScore = Number(highScore);
+}
+
 let gameState = "start";
+
+document.getElementById("highScore").textContent = highScore;
 
 let keys = {};
 
@@ -339,10 +351,14 @@ function drawGameOverScreen() {
 
 function checkGameOver() {
     if (batteryLevel <= 0) {
-        gameState = "gameOver";
-
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("ecoDashHighScore", highScore);
+                document.getElementById("highScore").textContent = highScore;
+            }
+            gameState = "gameOver";
+        }  
     }
-}
 
 function restartGame() {
     playerX = 100;
