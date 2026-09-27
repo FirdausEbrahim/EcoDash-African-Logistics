@@ -42,6 +42,9 @@ let distanceTravelled = 0;
 
 let score = 0;
 
+let energyUsed = 0;
+let energyEfficiency = 0;
+
 let highScore = localStorage.getItem("ecoDashHighScore");
 
 if (highScore == null) {
@@ -251,6 +254,7 @@ function updateBattery() {
 
         if ((keys["ArrowUp"] || keys["ArrowDown"]) && batteryLevel > 0) {
             batteryLevel -= batteryDrain;
+            energyUsed += batteryDrain;
     }
 
     if (batteryLevel < 0) {
@@ -274,7 +278,19 @@ function updateScoreAndDistance() {
     document.getElementById("score").textContent = score;
 }
 
+function updateEfficiency() {
+    if (energyUsed > 0) {
+    energyEfficiency = distanceTravelled / energyUsed;
+}
+else {
+    energyEfficiency = 0;
+}
+    document.getElementById("efficiency").textContent =
+    energyEfficiency.toFixed(1);
+}
+
 function drawStartScreen() {
+    ctx.save();
     ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "white";
@@ -294,9 +310,12 @@ function drawStartScreen() {
         canvas.width /2,
         canvas.height /2 
     );
+
+    ctx.restore();
 }
 
 function drawPauseScreen() {
+    ctx.save();
     ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "white";
@@ -312,10 +331,12 @@ function drawPauseScreen() {
      ctx.font = "18px Arial";
 
     ctx.fillText(
-        "Press Enter to Start",
+        "Press P to Continue",
         canvas.width /2,
         canvas.height /2 + 40
     );
+
+    ctx.restore();
 }
 
 function drawGameOverScreen() {
@@ -339,12 +360,19 @@ function drawGameOverScreen() {
         canvas.width /2,
         canvas.height /2
     );
-
+    
+    ctx.fillText(
+        "Efficiency: " + energyEfficiency.toFixed(1),
+        canvas.width /2,
+        canvas.height /2 + 30
+    );
+   
     ctx.fillText(
         "Press R to Restart",
         canvas.width /2,
-        canvas.height /2 + 40
+        canvas.height /2 + 70
     );
+
 
     ctx.restore();
 }
@@ -373,11 +401,15 @@ function restartGame() {
     distanceTravelled = 0;
     score = 0;
 
+    energyUsed = 0;
+    energyEfficiency = 0;
+
     keys = {};
 
     document.getElementById("battery").textContent = 100;
     document.getElementById("distance").textContent = 0;
-    document.getElementById("score").textContent = 0;
+    document.getElementById("score").textContent = 0; 
+    document.getElementById("efficiency").textContent = 0;
 
     gameState = "playing";
 }
@@ -396,6 +428,7 @@ if (gameState == "playing") {
     movePlayer();
     updateBattery();
     updateScoreAndDistance();
+    updateEfficiency();
     checkChargingZone();
     checkPotholeCollision();
     checkWildLifeCollision();
