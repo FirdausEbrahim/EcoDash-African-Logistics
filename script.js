@@ -32,7 +32,7 @@ let potholeX = 450;
 let potholeY = 250;
 
 let potholeWidth = 70;
-let potholeheight = 45;
+let potholeHeight = 45;
 
 let wildLifeX = 800;
 let wildLifeY = 180;
@@ -59,7 +59,7 @@ function drawPothole() {
     ctx.fillStyle = "#4A2C20";
 
     ctx.fillRect(
-        potholeX, potholeY, potholeWidth, potholeheight);
+        potholeX, potholeY, potholeWidth, potholeHeight);
 }
 
 function drawWildLife() {
@@ -94,7 +94,7 @@ function checkPotholeCollision(){
     if (
         playerX < potholeX + potholeWidth &&
         playerX + 60 > potholeX &&
-        playerY < potholeY + potholeheight &&
+        playerY < potholeY + potholeHeight &&
         playerY + 35 > potholeY
     ){
         velocityX *= 0.4;
@@ -163,6 +163,7 @@ function movePlayer() {
 velocityX *= friction;
 velocityY *= friction;
 
+
 if (velocityX > maxSpeed) {
     velocityX = maxSpeed;
 
@@ -187,6 +188,28 @@ if (velocityY < -maxSpeed) {
 playerX += velocityX;
 playerY += velocityY;
 
+if (playerX < 0) {
+    playerX = 0;
+    velocityX = 0;
+
+}
+
+if (playerX + 60 > canvas.width) {
+    playerX = canvas.width - 60;
+    velocityX = 0;
+
+}
+
+if (playerY < 0) {
+    playerY = 0;
+    velocityY = 0;
+}
+
+if (playerY + 35 > canvas.height) {
+    playerY = canvas.height - 35;
+    velocityY = 0;
+
+}
 }
 
 function updateBattery() {
