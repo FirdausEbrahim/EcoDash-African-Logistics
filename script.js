@@ -123,15 +123,22 @@ let solarHeight = 70;
 
 let rechargeRate = 0.08;
 
-let potholeX = 450;
-let potholeY = 250;
+let potholeX = canvas.width * 0.38;
+let potholeY = canvas.height * 0.58;
 
 let potholeWidth = 70;
 let potholeHeight = 45;
 
-let wildLifeX = 800;
-let wildLifeY = 180;
+let wildLifeX = canvas.width * 0.70;
+let wildLifeY = canvas.height * 0.55;
 let wildLifeRadius = 35;
+
+let deliveryX = canvas.width * 0.62;
+let deliveryY = canvas.height * 0.72;
+let deliveryWidth = 110;
+let deliveryHeight = 70;
+let deliveries = 0;
+let deliveiriesBonus = 0;
 
 let distanceTravelled = 0;
 
@@ -155,9 +162,104 @@ document.getElementById("highScore").textContent = highScore;
 
 let keys = {};
 
+document.addEventListener("keydown", function(event) {
+    keys[event.keys] = true;
+
+    if (event.key == "Enter" && gameState == "start") {
+        gameState = "playing";
+    }
+
+    if (event.key == "p" || event.key == "P") {
+        if (gameState == "playing") {
+            gameState = "paused";
+        }
+
+        else if (gameState == "paused") {
+            gameState = "playing";
+        }
+    }
+
+    if ((event.key == "r" || event.key == "R") && gameState == "gameOver") {
+        restartGame();
+    }
+});
+
+document.addEventListener("keyup", function(event) {
+    keys[event.key] = false;
+});
+
 function drawBackground() {
    ctx.fillStyle = "#D8A47F";
    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawHouse(x, y) {
+    //homes
+    ctx.fillStyle = "#E9C46A"
+    ctx.fillRect(x, y, 90, 65);
+    //roof
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y);
+    ctx.lineTo(x + 45, y - 40);
+    ctx.lineTo(x + 100, y);
+    ctx.closePath();
+
+    ctx.fillStyle = "#9C6644";
+    ctx.fill();
+
+    //door
+    ctx.fillStyle = "#6F4518";
+    ctx.fillRect(x + 35, y + 30, 20, 35);
+
+    //windows
+    ctx.fillStyle = "#A8DADC";
+    ctx.fillRect(x + 10, y + 20, 18, 18);
+    ctx.fillRect(x + 63, y + 20, 18, 18);
+}
+
+function drawVillage() {
+    drawHouse(100, 100);
+    drawHouse(300, 130);
+    drawHouse(520, 90);
+
+}
+
+function drawTree(x, y) {
+    ctx.fillStyle = "#6B4423"
+    ctx.fillRect(x, y, 12, 40);
+    ctx.beginPath();
+    ctx.arc(x + 6, y - 5, 25, 0, Math.PI * 2);
+    ctx.fillStyle = "#588157";
+    ctx.fill();
+}
+
+function drawTrees() {
+    drawTree(60, 210);
+    drawTree(240, 80);
+    drawTree(700, 130);
+    drawTree(920, 200);
+}
+
+function drawClinic() {
+    let clinicX = canvas.width - 190;
+    let clinicY = 90;
+
+    ctx.fillStyle ="#F1FAEE";
+    ctx.fillRect(clinicX, clinicY, 150, 90);
+
+    ctx.fillStyle = "#457B9D";
+    ctx.fillRect(clinicX + 60, clinicY + 50, 30, 40);
+
+    ctx.fillStyle = "black";
+    ctx.font = "12px Arial";
+    ctx.textAlign = "left";
+
+    ctx.fillText(
+        "Community Clinic",
+        clinicX + 25,
+        clinicY + 108
+    );
+
 }
 
 function drawSolarZone() {
@@ -185,6 +287,47 @@ function drawWildLife() {
     ctx.font = "12px Arial";
     ctx.textAlign = "left";
     ctx.fillText("WildLife", wildLifeX - 20, wildLifeY + 5);
+}
+
+function drawDeliveryPoint() {
+    ctx.fillStyle = "#6B8E23";
+    ctx.fillRect(
+        deliveryX,
+        deliveryY,
+        deliveryWidth,
+        deliveryHeight
+    );
+
+    ctx.fillStyle = "white";
+    ctx.font = "12px Arial";
+    ctx.textAlign = "left";
+
+    ctx.fillText(
+        "Delivery Point",
+        deliveryX + 15,
+        deliveryY + 40
+    );
+}
+
+function checkDelivery() {
+    
+    if (
+        player.x < deliveryX + deliveryWidth &&
+        player.x + player.width > deliveryX &&
+        player.y < deliveryY + deliveryHeight &&
+        player.y + player.height > deliveryY 
+    ) {
+        deliveries += 1;
+        deliveiriesBonus += 500;
+        document.getElementById("deliveries").textContent =
+        deliveries;
+
+        deliveryX = 
+        Math.random() * (canvas.width - deliveryWidth);
+
+        deliveryY = 
+        Math.random() * (canvas.height - deliveryHeight);
+    }
 }
 
 function checkWildLifeCollision() {
@@ -260,7 +403,7 @@ function updateScoreAndDistance() {
     );
 
     distanceTravelled += speed * 0.05;
-    score = Math.floor(distanceTravelled * 10);
+    score = Math.floor(distanceTravelled * 10) + deliveiriesBonus;
     document.getElementById("distance").textContent = 
         Math.floor(distanceTravelled);
 
@@ -390,6 +533,9 @@ function restartGame() {
     distanceTravelled = 0;
     score = 0;
 
+    deliveries = 0;
+    deliveiriesBonus = 0;
+
     energyUsed = 0;
     energyEfficiency = 0;
 
@@ -399,6 +545,7 @@ function restartGame() {
     document.getElementById("distance").textContent = 0;
     document.getElementById("score").textContent = 0; 
     document.getElementById("efficiency").textContent = 0;
+    document.getElementById("deliveries").textContent = 0;
 
     gameState = "playing";
 }
@@ -407,9 +554,13 @@ function animate() {
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 drawBackground();
+drawVillage();
+drawTrees();
+drawClinic();
 drawSolarZone();
 drawPothole();
 drawWildLife();
+drawDeliveryPoint();
 
 if (gameState == "playing") {
 
@@ -422,6 +573,7 @@ if (gameState == "playing") {
     checkPotholeCollision();
     checkWildLifeCollision();
     checkGameOver();
+    checkDelivery();
 
 }
 
