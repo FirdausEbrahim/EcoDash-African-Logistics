@@ -1,0 +1,46 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="ttRwInPjnqaPgFVl-6Xi">
+    <mxGraphModel dx="1125" dy="684" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="34j5otAwj0jfAeJkv_HR-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=12 12;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="520" width="730" x="40" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-5" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.173;entryDx=0;entryDy=0;entryPerimeter=0;" target="34j5otAwj0jfAeJkv_HR-2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="240.00000000000023" as="sourcePoint" />
+            <mxPoint x="760" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-7" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.394;entryDx=0;entryDy=0;entryPerimeter=0;" target="34j5otAwj0jfAeJkv_HR-2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="360.0000000000002" as="sourcePoint" />
+            <mxPoint x="760" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 36px;&quot;&gt;EcoDash - African Logistics&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="490" x="165" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="130" x="50" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="130" x="190" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="130" x="330" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="130" x="470" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="30" width="130" x="610" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="34j5otAwj0jfAeJkv_HR-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 36px;&quot;&gt;Game screen&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="235" x="300" y="450" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

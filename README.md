@@ -1,6 +1,10 @@
 # EcoDash-African-Logistic
 A WAS262 HTML5 Canvas simulation about electric medical deliveries in South Africa.
 
+## Project Links
+GitHub Repository: https://github.com/FirdausEbrahim/EcoDash-African-Logistics
+Live Application: https://firdausebrahim.github.io/EcoDash-African-Logistics/
+
 ## Project Description 
 EcoDash is an interactive HTML5 Canvas game which was based on the challenges of delivering healthcare essentials to rural areas in South Africa. In this game the player controls a solar-powered delivery drone and he must map through a rural enviroment while also managing their battery power and avoiding the given enviromental obstacles. The game demonstrates how drones along with renewable energy could assist with healthcare and delivery in rural regions.
 
