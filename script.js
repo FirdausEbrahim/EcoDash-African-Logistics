@@ -6,7 +6,7 @@ canvas.height = window.innerHeight - 140;
 
 class Drone {
 
-    constructor(x,y) {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
 
@@ -15,7 +15,7 @@ class Drone {
 
         this.velocityX = 0;
         this.velocityY = 0;
-        
+
         this.angle = 0;
     }
 
@@ -82,9 +82,9 @@ class Drone {
         ctx.restore();
     }
 
-    move(){
+    move() {
 
-        if(keys["ArrowLeft"]) {
+        if (keys["ArrowLeft"]) {
             this.angle -= turnSpeed;
         }
 
@@ -93,8 +93,8 @@ class Drone {
         }
 
         if (keys["ArrowUp"] && batteryLevel > 0) {
-             this.velocityX += Math.cos(this.angle) * acceleration;
-             this.velocityY += Math.sin(this.angle) * acceleration;
+            this.velocityX += Math.cos(this.angle) * acceleration;
+            this.velocityY += Math.sin(this.angle) * acceleration;
         }
 
         if (keys["ArrowDown"] && batteryLevel > 0) {
@@ -102,15 +102,15 @@ class Drone {
             this.velocityY -= Math.sin(this.angle) * acceleration;
         }
 
-       
+
         this.velocityX *= friction;
         this.velocityY *= friction;
 
-        if (this.velocityX > maxSpeed){
+        if (this.velocityX > maxSpeed) {
             this.velocityX = maxSpeed;
         }
 
-        if (this.velocityX < -maxSpeed){
+        if (this.velocityX < -maxSpeed) {
             this.velocityX = -maxSpeed;
         }
 
@@ -300,7 +300,7 @@ class Bird {
 
 let birds = [];
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 5; i++) {
 
     birds.push(
 
@@ -323,9 +323,9 @@ for (let i = 0; i < 10; i++) {
     );
 }
 
-let drone = new Drone(100, canvas.height /2);
+let drone = new Drone(100, canvas.height / 2);
 
-let acceleration = 0.3; 
+let acceleration = 0.3;
 let friction = 0.95;
 let maxSpeed = 6;
 
@@ -377,7 +377,7 @@ let keys = {};
 
 let audioContext;
 
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
     keys[event.code] = true;
 
 
@@ -385,7 +385,7 @@ document.addEventListener("keydown", function(event) {
         event.code == "ArrowUp" ||
         event.code == "ArrowDown" ||
         event.code == "ArrowLeft" ||
-        event.code == "ArrowRight" 
+        event.code == "ArrowRight"
     ) {
         event.preventDefault();
     }
@@ -404,7 +404,7 @@ document.addEventListener("keydown", function(event) {
         gameState = "playing";
     }
 
-        if (event.code == "keyP") {
+    if (event.code == "KeyP") {
 
         if (gameState == "playing") {
             gameState = "paused";
@@ -420,13 +420,13 @@ document.addEventListener("keydown", function(event) {
     }
 });
 
-document.addEventListener("keyup", function(event) {
+document.addEventListener("keyup", function (event) {
     keys[event.code] = false;
 });
 
 function drawBackground() {
-   ctx.fillStyle = "#D8A47F";
-   ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#D8A47F";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function drawDustyRoad() {
@@ -511,7 +511,7 @@ function drawClinic() {
     let clinicX = canvas.width - 190;
     let clinicY = 90;
 
-    ctx.fillStyle ="#F1FAEE";
+    ctx.fillStyle = "#F1FAEE";
     ctx.fillRect(clinicX, clinicY, 150, 90);
 
     ctx.fillStyle = "#457B9D";
@@ -613,7 +613,7 @@ function checkChargingZone() {
         drone.x + drone.width > solarX &&
         drone.y < solarY + solarHeight &&
         drone.y + drone.height > solarY
-    ){
+    ) {
         batteryLevel += rechargeRate;
     }
 
@@ -621,7 +621,7 @@ function checkChargingZone() {
         batteryLevel = 100;
     }
 
-        document.getElementById("battery").textContent =
+    document.getElementById("battery").textContent =
         Math.round(batteryLevel);
 
 }
@@ -629,9 +629,9 @@ function checkChargingZone() {
 
 function updateBattery() {
 
-        if ((keys["ArrowUp"] || keys["ArrowDown"]) && batteryLevel > 0) {
-            batteryLevel -= batteryDrain;
-            energyUsed += batteryDrain;
+    if ((keys["ArrowUp"] || keys["ArrowDown"]) && batteryLevel > 0) {
+        batteryLevel -= batteryDrain;
+        energyUsed += batteryDrain;
     }
 
     if (batteryLevel < 0) {
@@ -644,12 +644,12 @@ function updateBattery() {
 function updateScoreAndDistance() {
     let speed = Math.sqrt(
         drone.velocityX * drone.velocityX +
-        drone.velocityY * drone.velocityY 
+        drone.velocityY * drone.velocityY
     );
 
     distanceTravelled += speed * 0.05;
     score = Math.floor(distanceTravelled * 10) + deliveiriesBonus;
-    document.getElementById("distance").textContent = 
+    document.getElementById("distance").textContent =
         Math.floor(distanceTravelled);
 
     document.getElementById("score").textContent = score;
@@ -657,13 +657,13 @@ function updateScoreAndDistance() {
 
 function updateEfficiency() {
     if (energyUsed > 0) {
-    energyEfficiency = distanceTravelled / energyUsed;
-}
-else {
-    energyEfficiency = 0;
-}
+        energyEfficiency = distanceTravelled / energyUsed;
+    }
+    else {
+        energyEfficiency = 0;
+    }
     document.getElementById("efficiency").textContent =
-    energyEfficiency.toFixed(1);
+        energyEfficiency.toFixed(1);
 }
 
 function drawStartScreen() {
@@ -676,16 +676,16 @@ function drawStartScreen() {
 
     ctx.fillText(
         "EcoDash",
-        canvas.width /2,
-        canvas.height /2 -40
+        canvas.width / 2,
+        canvas.height / 2 - 40
     );
 
     ctx.font = "18px Arial";
 
     ctx.fillText(
         "Press Enter to Start",
-        canvas.width /2,
-        canvas.height /2 
+        canvas.width / 2,
+        canvas.height / 2
     );
 
     ctx.restore();
@@ -701,16 +701,16 @@ function drawPauseScreen() {
 
     ctx.fillText(
         "Paused",
-        canvas.width /2,
-        canvas.height /2 
+        canvas.width / 2,
+        canvas.height / 2
     );
 
-     ctx.font = "18px Arial";
+    ctx.font = "18px Arial";
 
     ctx.fillText(
         "Press P to Continue",
-        canvas.width /2,
-        canvas.height /2 + 40
+        canvas.width / 2,
+        canvas.height / 2 + 40
     );
 
     ctx.restore();
@@ -726,28 +726,28 @@ function drawGameOverScreen() {
 
     ctx.fillText(
         "Game Over!",
-        canvas.width /2,
-        canvas.height /2 - 40
+        canvas.width / 2,
+        canvas.height / 2 - 40
     );
 
-     ctx.font = "18px Arial";
+    ctx.font = "18px Arial";
 
     ctx.fillText(
         "Final Score: " + score,
-        canvas.width /2,
-        canvas.height /2
+        canvas.width / 2,
+        canvas.height / 2
     );
-    
+
     ctx.fillText(
         "Efficiency: " + energyEfficiency.toFixed(1),
-        canvas.width /2,
-        canvas.height /2 + 30
+        canvas.width / 2,
+        canvas.height / 2 + 30
     );
-   
+
     ctx.fillText(
         "Press R to Restart",
-        canvas.width /2,
-        canvas.height /2 + 70
+        canvas.width / 2,
+        canvas.height / 2 + 70
     );
 
 
@@ -756,19 +756,19 @@ function drawGameOverScreen() {
 
 function checkGameOver() {
     if (batteryLevel <= 0) {
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem("ecoDashHighScore", highScore);
-                document.getElementById("highScore").textContent = highScore;
-            }
-            playSound(200, 0.5);
-            gameState = "gameOver";
-        }  
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("ecoDashHighScore", highScore);
+            document.getElementById("highScore").textContent = highScore;
+        }
+        playSound(200, 0.5);
+        gameState = "gameOver";
     }
+}
 
 function restartGame() {
     drone.x = 100;
-    drone.y = canvas.height /2;
+    drone.y = canvas.height / 2;
 
     drone.velocityX = 0;
     drone.velocityY = 0;
@@ -791,7 +791,7 @@ function restartGame() {
 
     document.getElementById("battery").textContent = 100;
     document.getElementById("distance").textContent = 0;
-    document.getElementById("score").textContent = 0; 
+    document.getElementById("score").textContent = 0;
     document.getElementById("efficiency").textContent = 0;
     document.getElementById("deliveries").textContent = 0;
 
@@ -820,7 +820,7 @@ function drawRainEffect() {
 
 function updateBirds() {
 
-    birds.forEach(function(bird) {
+    birds.forEach(function (bird) {
 
         bird.update();
 
@@ -866,11 +866,11 @@ function animate() {
     drawClinic();
     drawSolarZone();
     drawDeliveryPoint();
-    updateBirds();
+    
 
     if (gameState == "playing") {
 
-
+        updateBirds();
         drone.move();
         applyWind();
         updateBattery();

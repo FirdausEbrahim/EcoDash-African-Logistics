@@ -16,7 +16,7 @@ h2 {
     font-size: 18px;
 }
 
-.HUD{
+.HUD {
     display: flex;
     justify-content: center;
     gap: 40px;
