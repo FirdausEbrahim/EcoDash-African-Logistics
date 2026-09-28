@@ -488,7 +488,9 @@ function drawVillage() {
     drawHouse(100, 100);
     drawHouse(300, 130);
     drawHouse(520, 90);
-
+    drawHouse(530, 415);
+    drawHouse(330, 375);
+    drawHouse(130, 400);
 }
 
 function drawTree(x, y) {
