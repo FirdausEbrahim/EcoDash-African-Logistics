@@ -4,7 +4,7 @@ let ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 140;
 
-class Player {
+class Drone {
 
     constructor(x,y) {
         this.x = x;
@@ -20,22 +20,64 @@ class Player {
     }
 
     draw() {
+
         ctx.save();
 
         ctx.translate(
-            this.x + this.width /2,
-            this.y + this.height /2
+            this.x + this.width / 2,
+            this.y + this.height / 2
         );
 
         ctx.rotate(this.angle);
-        ctx.fillStyle = "#7F5539"
-        
+
+        // Drone arms
+        ctx.strokeStyle = "#3B2A24";
+        ctx.lineWidth = 4;
+
+        ctx.beginPath();
+
+        ctx.moveTo(-12, -7);
+        ctx.lineTo(-28, -20);
+
+        ctx.moveTo(12, -7);
+        ctx.lineTo(28, -20);
+
+        ctx.moveTo(-12, 7);
+        ctx.lineTo(-28, 20);
+
+        ctx.moveTo(12, 7);
+        ctx.lineTo(28, 20);
+
+        ctx.stroke();
+
+        // Drone body
+        ctx.fillStyle = "#7F5539";
+
         ctx.fillRect(
-            -this.width /2,
-            -this.height /2,
-            this.width,
-            this.height
+            -18,
+            -10,
+            36,
+            20
         );
+
+        // Rotors
+        ctx.fillStyle = "#2F3E46";
+
+        ctx.beginPath();
+        ctx.arc(-28, -20, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(28, -20, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(-28, 20, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(28, 20, 8, 0, Math.PI * 2);
+        ctx.fill();
 
         ctx.restore();
     }
@@ -50,16 +92,17 @@ class Player {
             this.angle += turnSpeed;
         }
 
-        if (keys["ArrowDown"] && batteryLevel > 0) {
-            this.velocityX -= Math.cos(this.angle) * acceleration;
-            this.velocityY -= Math.sin(this.angle) * acceleration;
-        }
-
         if (keys["ArrowUp"] && batteryLevel > 0) {
              this.velocityX += Math.cos(this.angle) * acceleration;
              this.velocityY += Math.sin(this.angle) * acceleration;
         }
 
+        if (keys["ArrowDown"] && batteryLevel > 0) {
+            this.velocityX -= Math.cos(this.angle) * acceleration;
+            this.velocityY -= Math.sin(this.angle) * acceleration;
+        }
+
+       
         this.velocityX *= friction;
         this.velocityY *= friction;
 
@@ -87,7 +130,7 @@ class Player {
             this.velocityX = 0;
         }
 
-        if (this.x + this.width > canvas.width){
+        if (this.x + this.width > canvas.width) {
             this.x = canvas.width - this.width;
             this.velocityX = 0;
         }
@@ -104,7 +147,183 @@ class Player {
     }
 }
 
-let player = new Player(100, canvas.height /2);
+class Bird {
+
+    constructor(x, y, width, height, speed) {
+
+        this.x = x;
+        this.y = y;
+
+        this.width = width;
+        this.height = height;
+
+        this.speed = speed;
+
+        this.color = ["brown", "black", "grey"][
+            Math.floor(Math.random() * 3)
+        ];
+    }
+
+
+    update() {
+
+        this.x += this.speed;
+
+        this.y +=
+            Math.sin(
+                Date.now() * 0.002 +
+                this.x * 0.01
+            ) * 0.5;
+
+
+        if (
+            this.speed > 0 &&
+            this.x > canvas.width + this.width
+        ) {
+
+            this.x = -this.width;
+
+            this.y =
+                80 + Math.random() * 250;
+        }
+
+        else if (
+            this.speed < 0 &&
+            this.x < -this.width
+        ) {
+
+            this.x =
+                canvas.width + this.width;
+
+            this.y =
+                80 + Math.random() * 250;
+        }
+    }
+
+
+    draw() {
+
+        ctx.save();
+
+        ctx.translate(
+            this.x,
+            this.y
+        );
+
+
+        // Bird body
+        ctx.fillStyle = this.color;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            0,
+            0,
+            12,
+            8,
+            0,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        // Wings
+        let flap =
+            Math.sin(Date.now() * 0.02) * 8;
+
+        ctx.strokeStyle = "#5C4033";
+        ctx.lineWidth = 3;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(-5, 0);
+        ctx.lineTo(-15, flap);
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(5, 0);
+        ctx.lineTo(15, flap);
+
+        ctx.stroke();
+
+
+        // Beak
+        ctx.fillStyle = "orange";
+
+        ctx.beginPath();
+
+        ctx.moveTo(12, 0);
+        ctx.lineTo(18, -2);
+        ctx.lineTo(18, 2);
+
+        ctx.closePath();
+
+        ctx.fill();
+
+
+        ctx.restore();
+    }
+
+
+    collides(drone) {
+
+        let droneCenterX =
+            drone.x + drone.width / 2;
+
+        let droneCenterY =
+            drone.y + drone.height / 2;
+
+
+        let dx =
+            droneCenterX - this.x;
+
+        let dy =
+            droneCenterY - this.y;
+
+
+        let distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+
+        return distance < 30;
+    }
+}
+
+let birds = [];
+
+for (let i = 0; i < 10; i++) {
+
+    birds.push(
+
+        new Bird(
+
+            Math.random() * canvas.width,
+
+            80 + Math.random() * 250,
+
+            40,
+
+            20,
+
+            Math.random() > 0.5
+                ? 2 + Math.random() * 2
+                : -(2 + Math.random() * 2)
+
+        )
+
+    );
+}
+
+let drone = new Drone(100, canvas.height /2);
 
 let acceleration = 0.3; 
 let friction = 0.95;
@@ -123,22 +342,13 @@ let solarHeight = 70;
 
 let rechargeRate = 0.08;
 
-let potholeX = canvas.width * 0.38;
-let potholeY = canvas.height * 0.58;
-
-let potholeWidth = 70;
-let potholeHeight = 45;
-
-let wildLifeX = canvas.width * 0.70;
-let wildLifeY = canvas.height * 0.55;
-let wildLifeRadius = 35;
-
 let deliveryX = canvas.width * 0.62;
 let deliveryY = canvas.height * 0.72;
 let deliveryWidth = 110;
 let deliveryHeight = 70;
 let deliveries = 0;
 let deliveiriesBonus = 0;
+let wasInDeliveryPoint = false;
 
 let distanceTravelled = 0;
 
@@ -146,6 +356,9 @@ let score = 0;
 
 let energyUsed = 0;
 let energyEfficiency = 0;
+
+let windStrength = 0.015;
+let rainActive = true;
 
 let highScore = localStorage.getItem("ecoDashHighScore");
 
@@ -162,14 +375,37 @@ document.getElementById("highScore").textContent = highScore;
 
 let keys = {};
 
-document.addEventListener("keydown", function(event) {
-    keys[event.keys] = true;
+let audioContext;
 
-    if (event.key == "Enter" && gameState == "start") {
+document.addEventListener("keydown", function(event) {
+    keys[event.code] = true;
+
+
+    if (
+        event.code == "ArrowUp" ||
+        event.code == "ArrowDown" ||
+        event.code == "ArrowLeft" ||
+        event.code == "ArrowRight" 
+    ) {
+        event.preventDefault();
+    }
+
+    if (event.code == "Enter" && gameState == "start") {
+
+        if (!audioContext) {
+            audioContext =
+                new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (audioContext.state == "suspended") {
+            audioContext.resume();
+        }
+
         gameState = "playing";
     }
 
-    if (event.key == "p" || event.key == "P") {
+        if (event.code == "keyP") {
+
         if (gameState == "playing") {
             gameState = "paused";
         }
@@ -179,18 +415,49 @@ document.addEventListener("keydown", function(event) {
         }
     }
 
-    if ((event.key == "r" || event.key == "R") && gameState == "gameOver") {
+    if (event.code == "KeyR" && gameState == "gameOver") {
         restartGame();
     }
 });
 
 document.addEventListener("keyup", function(event) {
-    keys[event.key] = false;
+    keys[event.code] = false;
 });
 
 function drawBackground() {
    ctx.fillStyle = "#D8A47F";
    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawDustyRoad() {
+
+    ctx.save();
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        -50,
+        canvas.height * 0.75
+    );
+
+    ctx.bezierCurveTo(
+        canvas.width * 0.25,
+        canvas.height * 0.55,
+
+        canvas.width * 0.55,
+        canvas.height * 0.85,
+
+        canvas.width + 50,
+        canvas.height * 0.65
+    );
+
+    ctx.strokeStyle = "#B08968";
+    ctx.lineWidth = 130;
+    ctx.lineCap = "round";
+
+    ctx.stroke();
+
+    ctx.restore();
 }
 
 function drawHouse(x, y) {
@@ -269,25 +536,8 @@ function drawSolarZone() {
     ctx.font = "12px Arial";
     ctx.textAlign = "left";
     ctx.fillText("Solar Charging point", solarX + 20, solarY + 40);
-   }
-
-function drawPothole() {
-    ctx.fillStyle = "#4A2C20";
-
-    ctx.fillRect(
-        potholeX, potholeY, potholeWidth, potholeHeight);
 }
 
-function drawWildLife() {
-    ctx.beginPath();
-    ctx.arc(wildLifeX, wildLifeY, wildLifeRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#A2674A";
-    ctx.fill();
-    ctx.fillStyle = "black";
-    ctx.font = "12px Arial";
-    ctx.textAlign = "left";
-    ctx.fillText("WildLife", wildLifeX - 20, wildLifeY + 5);
-}
 
 function drawDeliveryPoint() {
     ctx.fillStyle = "#6B8E23";
@@ -309,65 +559,60 @@ function drawDeliveryPoint() {
     );
 }
 
-function checkDelivery() {
-    
-    if (
-        player.x < deliveryX + deliveryWidth &&
-        player.x + player.width > deliveryX &&
-        player.y < deliveryY + deliveryHeight &&
-        player.y + player.height > deliveryY 
-    ) {
-        deliveries += 1;
-        deliveiriesBonus += 500;
-        document.getElementById("deliveries").textContent =
-        deliveries;
+function playSound(frequency, duration) {
 
-        deliveryX = 
-        Math.random() * (canvas.width - deliveryWidth);
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        deliveryY = 
-        Math.random() * (canvas.height - deliveryHeight);
     }
-}
 
-function checkWildLifeCollision() {
-    let playerCenterX = player.x + player.width /2;
-    let playerCenterY = player.y + player.height /2;
+    let oscillator = audioContext.createOscillator();
+    let gain = audioContext.createGain();
 
-    let distanceX = playerCenterX - wildLifeX;
-    let distanceY = playerCenterY - wildLifeY;
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
 
-    let distance = Math.sqrt(
-        distanceX * distanceX + 
-        distanceY * distanceY
+    oscillator.frequency.value = frequency;
+    oscillator.type = "sine";
+    gain.gain.value = 0.1;
+    oscillator.start();
+    oscillator.stop(
+        audioContext.currentTime + duration
     );
-
-    if (distance < wildLifeRadius + 30) {
-       player.velocityX *= 0.2;
-       player.velocityY *= 0.2;
-    }
 }
 
-function checkPotholeCollision(){
+function checkDelivery() {
 
-    if (
-        player.x < potholeX + potholeWidth &&
-        player.x + player.width > potholeX &&
-        player.y < potholeY + potholeHeight &&
-        player.y + player.height > potholeY
-    ){
-        player.velocityX *= 0.4;
-        player.velocityY *= 0.4;
+    let insideDeliveryPoint =
+
+        drone.x < deliveryX + deliveryWidth &&
+        drone.x + drone.width > deliveryX &&
+        drone.y < deliveryY + deliveryHeight &&
+        drone.y + drone.height > deliveryY;
+
+    if (insideDeliveryPoint && wasInDeliveryPoint == false) {
+
+        deliveries += 1;
+
+        deliveiriesBonus += 500;
+
+        document.getElementById("deliveries").textContent =
+            deliveries;
+
+        playSound(700, 0.2);
     }
+
+    wasInDeliveryPoint = insideDeliveryPoint;
 }
+
 
 function checkChargingZone() {
 
     if (
-        player.x < solarX + solarWidth &&
-        player.x + player.width > solarX &&
-        player.y < solarY + solarHeight &&
-        player.y + player.height > solarY
+        drone.x < solarX + solarWidth &&
+        drone.x + drone.width > solarX &&
+        drone.y < solarY + solarHeight &&
+        drone.y + drone.height > solarY
     ){
         batteryLevel += rechargeRate;
     }
@@ -398,8 +643,8 @@ function updateBattery() {
 
 function updateScoreAndDistance() {
     let speed = Math.sqrt(
-        player.velocityX * player.velocityX +
-        player.velocityY * player.velocityY 
+        drone.velocityX * drone.velocityX +
+        drone.velocityY * drone.velocityY 
     );
 
     distanceTravelled += speed * 0.05;
@@ -516,18 +761,19 @@ function checkGameOver() {
                 localStorage.setItem("ecoDashHighScore", highScore);
                 document.getElementById("highScore").textContent = highScore;
             }
+            playSound(200, 0.5);
             gameState = "gameOver";
         }  
     }
 
 function restartGame() {
-    player.x = 100;
-    player.y = canvas.height /2;
+    drone.x = 100;
+    drone.y = canvas.height /2;
 
-    player.velocityX = 0;
-    player.velocityY = 0;
+    drone.velocityX = 0;
+    drone.velocityY = 0;
 
-    player.angle = 0;
+    drone.angle = 0;
     batteryLevel = 100;
 
     distanceTravelled = 0;
@@ -538,6 +784,8 @@ function restartGame() {
 
     energyUsed = 0;
     energyEfficiency = 0;
+
+    wasInDeliveryPoint = false;
 
     keys = {};
 
@@ -550,51 +798,110 @@ function restartGame() {
     gameState = "playing";
 }
 
+function applyWind() {
+
+    drone.velocityX += windStrength;
+}
+
+function drawRainEffect() {
+
+    if (rainActive == true) {
+
+        ctx.fillStyle = "rgba(70, 90, 110, 0.15)";
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+    }
+}
+
+function updateBirds() {
+
+    birds.forEach(function(bird) {
+
+        bird.update();
+
+        bird.draw();
+
+
+        if (
+            gameState == "playing" &&
+            bird.collides(drone)
+        ) {
+
+            playSound(200, 0.5);
+
+
+            if (score > highScore) {
+
+                highScore = score;
+
+                localStorage.setItem(
+                    "ecoDashHighScore",
+                    highScore
+                );
+
+                document.getElementById(
+                    "highScore"
+                ).textContent = highScore;
+            }
+
+
+            gameState = "gameOver";
+        }
+
+    });
+}
+
 function animate() {
-ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-drawBackground();
-drawVillage();
-drawTrees();
-drawClinic();
-drawSolarZone();
-drawPothole();
-drawWildLife();
-drawDeliveryPoint();
+    drawBackground();
+    drawDustyRoad();
+    drawVillage();
+    drawTrees();
+    drawClinic();
+    drawSolarZone();
+    drawDeliveryPoint();
+    updateBirds();
 
-if (gameState == "playing") {
+    if (gameState == "playing") {
 
 
-    player.move();
-    updateBattery();
-    updateScoreAndDistance();
-    updateEfficiency();
-    checkChargingZone();
-    checkPotholeCollision();
-    checkWildLifeCollision();
-    checkGameOver();
-    checkDelivery();
+        drone.move();
+        applyWind();
+        updateBattery();
+        updateScoreAndDistance();
+        updateEfficiency();
+        checkChargingZone();
+        checkGameOver();
+        checkDelivery();
 
-}
+    }
 
-player.draw();
+    drone.draw();
 
-if (gameState == "start") {
-    drawStartScreen();
+    drawRainEffect();
 
-}
+    if (gameState == "start") {
+        drawStartScreen();
 
-if (gameState == "paused") {
-    drawPauseScreen();
+    }
 
-}
+    if (gameState == "paused") {
+        drawPauseScreen();
 
-if (gameState == "gameOver") {
-    drawGameOverScreen();
+    }
 
-}
+    if (gameState == "gameOver") {
+        drawGameOverScreen();
 
-requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
 
 }
 
